@@ -1,0 +1,70 @@
+<title>Encyptzz - RSA</title>
+<link href="/indexcss" rel="stylesheet">
+<link href="/rsacss" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js">
+</script>
+<div id="nav-placeholder">
+</div>
+<div class="container">
+	<div class="card p-4" style="margin-top: 5%;height:70%;">
+		<div class="chipss">
+		</div>
+		<div class="row mt-2">
+			<div class="col s6" id="private-key"></div>
+			<div class="col s6" id="public-key"></div>
+		</div>
+	</div>
+	<script>
+		function main() {
+			$("#nav-placeholder").load("/navbar");
+			$.get("/getusers", function (data, status) {
+				console.log(typeof data);
+				//let x = JSON.parse(data);
+				//console.log(typeof JSON.parse(data));
+				Object.keys(data).forEach((item, index) => {
+					classs = "'chip'";
+					$(".chipss").append("<div class=" + classs + " id=chip-" + index + " onclick='changeChip(this)'>" +
+						item + "</div>");
+				});
+				$(".chipss").append("<div class='chip' onclick='adduser()'> + Add User</div>");
+				//console.log(x);
+				changeChip($('#chip-0'));
+			});
+			//console.log($('#chip-0'));
+		}
+		main();
+		$(window).load(function () {
+			//console.log($('#chip-0'));
+		});
+
+		function changeChip(divv) {
+			$('.active-chip').removeClass("active-chip");
+			var w = $('#' + divv.id.toString());
+			console.log(w);
+			w.addClass('active-chip');
+			getuserdata(divv.innerHTML);
+		}
+
+		function adduser() {
+			var name = window.prompt("Enter a name");
+			$.get("/genrsa?name=" + name.toString(), function (data, status) {
+				window.location.reload();
+			});
+		}
+
+		function getuserdata(name) {
+			console.log(name);
+			$.get("/getuserdata?name=" + name.toString(), function (data, status) {
+				// idhar json laake bas display kardena
+				//console.log($("#private-key"));
+				$("#private-key").html(
+					"<div class='collapsible'><div class='collapsible-header'> Private Key</div><textarea style='height:250px;resize:none;' disabled>" +
+					data['private'] + "</textarea></div>");
+				$("#public-key").html(
+					"<div class='collapsible'><div class='collapsible-header'> Public Key</div><textarea style='height:250px;resize:none;' disabled>" +
+					data['public'] + "</textarea></div>");
+			});
+		}
+
+	</script>
