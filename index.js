@@ -19,6 +19,7 @@ var enc_algos = [
 	CryptoJS.RC4,
 ];
 
+
 var hash_algos = [
 	CryptoJS.MD5,
 	CryptoJS.SHA1,
@@ -29,26 +30,32 @@ var hash_algos = [
 	CryptoJS.RIPEMD160,
 ];
 
+
 router.get("/", function (req, res) {
 	// console.log(a);
 	res.sendFile(path.join(__dirname + "/templates/index.html"));
 });
 
+
 router.get("/navbar", function (req, res) {
 	res.sendFile(path.join(__dirname + "/templates/navbar.html"));
 });
+
 
 router.get("/hash", function (req, res) {
 	res.sendFile(path.join(__dirname + "/templates/hash.html"));
 });
 
+
 router.get("/rsa", function (req, res) {
 	res.sendFile(path.join(__dirname + "/templates/rsa.html"));
 });
 
+
 router.get("/dgst", function (req, res) {
 	res.sendFile(path.join(__dirname + "/templates/dgst.html"));
 });
+
 
 router.get("/cert", function (req, res) {
 	res.sendFile(path.join(__dirname + "/templates/cert.html"));
@@ -63,6 +70,7 @@ router.get("/indexcss", function (req, res) {
 router.get("/downloadsigned", function (req, res) {
 	res.sendFile(path.join(__dirname + "/openssl/signed.txt"));
 });
+
 
 router.get("/rsacss", function (req, res) {
 	res.sendFile(path.join(__dirname + "/css/rsa.css"));
@@ -88,8 +96,6 @@ router.get("/dec", function (req, res) {
 	// res.send(algo.decrypt(textt, keyy).toString());
 });
 
-
-
 // ! /hash?text=heyy&algo=0
 router.get("/hashalgo", function (req, res) {
 	const textt = req.query.text.toString();
@@ -99,6 +105,7 @@ router.get("/hashalgo", function (req, res) {
 	res.send(bytes.toString());
 	// res.send(algo.decrypt(textt, keyy).toString());
 });
+
 
 router.get("/getusers", function (req, res) {
 	res.json(JSON.parse(fs.readFileSync("data/users.json", "utf-8")));
@@ -140,9 +147,7 @@ router.get("/getuserdata", function (req, res) {
 });
 
 
-
 app.use(formidable());
-
 router.post("/sign", function (req, res) {
 	let files = req.files;
 	let send = false;
@@ -185,6 +190,7 @@ router.post("/sign", function (req, res) {
 	res.send(true);
 });
 
+
 router.post("/validate", function (req, res) {
 	let files = req.files;
 	infile = files['input-file'];
@@ -211,6 +217,7 @@ router.post("/validate", function (req, res) {
 	res.send(key);
 });
 
+
 router.get("/certgen", function (req, res) {
 	const name = req.query.name.toString();
 	var domain = name + '.com';
@@ -236,6 +243,7 @@ router.get("/getcertdata", function (req, res) {
 	const name = req.query.name.toString();
 	res.json(JSON.parse(fs.readFileSync("data/certs.json", "utf-8"))[name]);
 });
+
 
 router.get("/getcerts", function (req, res) {
 	res.json(JSON.parse(fs.readFileSync("data/certs.json", "utf-8")));
