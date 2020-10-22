@@ -1,0 +1,154 @@
+<title>Encyptzz - DGST</title>
+<link href="/indexcss" rel="stylesheet">
+<link href="/rsacss" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js">
+</script>
+<div id="nav-placeholder">
+</div>
+<div class="container">
+	<div class="card p-4" style="margin-top: 5%;height:70%;">
+		<!-- <div class="col s4 mb-2">
+				<label>
+					<input name="hmmm" type="radio" value="text" checked />
+					<span>Text</span>
+				</label>
+			</div>
+			<div class="col s4 mb-2">
+				<label>
+					<input name="hmmm" type="radio" value="file" />
+					<span>File</span>
+				</label>
+			</div> -->
+		<div class="row">
+			<div class="col s5 mb-2">
+				<label>
+					<input name="hmmm" type="radio" value="sign" checked />
+					<span>Sign</span>
+				</label>
+			</div>
+			<div class="col s5 mb-2">
+				<label>
+					<input name="hmmm" type="radio" value="validate" />
+					<span>Validate</span>
+				</label>
+			</div>
+			<div class="col s2 right" style="align-items:right;">
+				<button id="dgstbtn" class="btn waves-effect waves-light" type="submit" name="action" onclick="letsdsgt()"
+					style="width:150px;">Sign File</button>
+			</div>
+			<form id="key" name="main-form" enctype="multipart/form-data">
+				<div class="col s12 file-field input-field">
+					<div class="btn" style="width:150px;">
+						<span>Input File</span>
+						<input id="infile" type="file">
+					</div>
+					<div class="file-path-wrapper">
+						<input class="file-path validate" type="text" placeholder="Enter the file to sign">
+					</div>
+				</div>
+				<div id="privkey" class="col s12 file-field input-field">
+					<div class="btn" style="width:150px">
+						<span>Private Key</span>
+						<input id="privfile" type="file">
+					</div>
+					<div class="file-path-wrapper">
+						<input class="file-path validate" type="text" placeholder="Enter your private key to sign">
+					</div>
+				</div>
+				<a id="downloadbtn" class="col s12 center mt-4" hidden download>
+					<div class="btn center" style="width:150px;">Download</div>
+				</a>
+		</div>
+	</div>
+</div>
+</div>
+<script>
+	let sign = true;
+	$(function () {
+		$("#nav-placeholder").load("/navbar");
+	});
+	//$('input[type=radio][name=hmmm][value=sign]').attr(checked = true);
+	$('input[type=radio][name=hmmm]').change(function () {
+		if (this.value == 'sign') {
+			$("#dgstbtn").html("sign file");
+			$("#key").html("");
+			$("#key").html(
+				'<div class="col s12 file-field input-field"><div class="btn" style="width:150px;"><span>Input File</span><input id="infile" type="file"></div><div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Enter the file to sign"></div></div>' +
+				'<div id="privkey" class="col s12 file-field input-field"><div class="btn" style="width:150px"><span>Private Key</span><input id="privfile" type="file"></div><div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Enter your private key to sign"></div></div><a id="downloadbtn" class="col s12 center mt-4" hidden download><div class="btn center" style="width:150px;">Download</div></a>'
+				);
+			sign = true;
+		} else if (this.value == 'validate') {
+			$("#dgstbtn").html("validate file");
+			$("#key").html("");
+			$("#key").html(
+				'<div class="col s12 file-field input-field"><div class="btn" style="width:150px;"><span>Input File</span><input id="infile" type="file"></div><div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Enter the file to validate"></div></div>' +
+				'<div id="pubkey" class="col s12 file-field input-field"><div class="btn" style="width:150px"><span>Public Key</span><input id="pubfile" type="file"></div><div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Enter your public key to validate"></div></div>' +
+				'<div id="signfilekey" class="col s12 file-field input-field"><div class="btn" style="width:150px"><span>Signed File</span><input id="signfile" type="file"></div><div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Enter the signed file to validate"></div></div><div class="row"><div class="col s4"></div><div id="verified-text" class="col s4 btn center mt-4 teal" hidden style="color:white;display:none">Verification Successful</div>'
+				);
+			sign = false;
+		}
+	});
+
+	function letsdsgt() {
+		if (sign) {
+			var infile = document.getElementById('infile');
+			var privfile = document.getElementById('privfile');
+			if (!infile.value || !privfile.value) {
+				alert("Please select both input and private key before trying to sign.")
+			} else {
+				var form = $('#key')[0];
+				console.log(infile[0]);
+				var formData = new FormData(form);
+				formData.append("input-file", infile.files[0]);
+				formData.append("private-file", privfile.files[0]);
+				console.log(formData);
+				$.ajax({
+					url: '/sign',
+					data: formData,
+					type: 'POST',
+					contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+					processData: false, // NEEDED, DON'T OMIT THIS
+					enctype: "multipart/form-data",
+					success: (data) => {
+						console.log(data);
+						if (data == true) {
+							$('#downloadbtn').attr("hidden", false);
+							$('#downloadbtn').attr("href", '/downloadsigned');
+						}
+					}
+				})
+			}
+		} else {
+			var infile = document.getElementById('infile');
+			var pubfile = document.getElementById('pubfile');
+			var signfile = document.getElementById('signfile');
+			if (!infile.value || !pubfile.value || !signfile.value) {
+				alert("Please select three input , signed file,and public key before trying to sign.")
+			} else {
+				var form = $('#key')[0];
+				console.log(infile[0]);
+				var formData = new FormData(form);
+				formData.append("input-file", infile.files[0]);
+				formData.append("public-file", pubfile.files[0]);
+				formData.append("signed-file", signfile.files[0]);
+				$.ajax({
+					url: '/validate',
+					data: formData,
+					type: 'POST',
+					contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+					processData: false, // NEEDED, DON'T OMIT THIS
+					enctype: "multipart/form-data",
+					success: (data) => {
+						console.log(data);
+						$('#verified-text').css("display", "block");
+						if (data != true) {
+							$('#verified-text').html("Verification Failed!!");
+						}
+					}
+				})
+			}
+		}
+	}
+
+</script>

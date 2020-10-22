@@ -11,8 +11,8 @@
 		<div class="chipss">
 		</div>
 		<div class="row mt-2">
-			<div class="col s6" id="private-key"></div>
-			<div class="col s6" id="public-key"></div>
+			<div class="col s6 left" id="private-key"></div>
+			<div class="col s6 right" id="public-key"></div>
 		</div>
 	</div>
 	<script>
@@ -23,11 +23,12 @@
 				//let x = JSON.parse(data);
 				//console.log(typeof JSON.parse(data));
 				Object.keys(data).forEach((item, index) => {
-					classs = "'chip'";
-					$(".chipss").append("<div class=" + classs + " id=chip-" + index + " onclick='changeChip(this)'>" +
-						item + "</div>");
+					classs = "'btn m-2'";
+					$(".chipss").append("<div class= " + classs + " id=chip-" + index +
+						" onclick='changeChip(this)' style='margin-left:2%;'>" + item + "</div>");
 				});
-				$(".chipss").append("<div class='chip' onclick='adduser()'> + Add User</div>");
+				$(".chipss").append(
+					"<div class='btn m-2 right' onclick='adduser()' style='margin-left:2%;'> + Add User</div>");
 				//console.log(x);
 				changeChip($('#chip-0'));
 			});
@@ -59,12 +60,27 @@
 				// idhar json laake bas display kardena
 				//console.log($("#private-key"));
 				$("#private-key").html(
-					"<div class='collapsible'><div class='collapsible-header'> Private Key</div><textarea style='height:250px;resize:none;' disabled>" +
+					"<div class='collapsible row'><div class='col s7 btn white center' style='color:black;'> Private Key</div><div class='col s5 btn right' style='height:35px' onclick='copyToClipBoardPrivate()'> Copy to ClipBoard</div><textarea id='private-text' style='height:250px;resize:none;'>" +
 					data['private'] + "</textarea></div>");
 				$("#public-key").html(
-					"<div class='collapsible'><div class='collapsible-header'> Public Key</div><textarea style='height:250px;resize:none;' disabled>" +
+					"<div class='collapsible row'><div class='col s7 btn white center' style='color:black;'> Public Key</div><div class='col s5 btn right' style='height:35px' onclick='copyToClipBoardPublic()'> Copy to ClipBoard</div><textarea id='public-text' style='height:250px;resize:none;'>" +
 					data['public'] + "</textarea></div>");
 			});
+		}
+
+		function copyToClipBoardPrivate() {
+			copyToClipBoard("private-text");
+		}
+
+		function copyToClipBoardPublic() {
+			copyToClipBoard("public-text");
+		}
+
+		function copyToClipBoard(id) {
+			var copyText = document.getElementById(id);
+			copyText.select();
+			console.log(copyText);
+			document.execCommand("copy");
 		}
 
 	</script>

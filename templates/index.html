@@ -6,28 +6,30 @@
 <div class="container">
 	<div class="card p-4" style="margin-top: 5%;">
 		<div class="row">
-			<div class="col s4 mb-2">
+			<div class="col s5 mb-2">
 				<label>
 					<input name="hmmm" type="radio" value="encrypt" checked />
 					<span>Encrypt</span>
 				</label>
 			</div>
-			<div class="col s4 mb-2">
+			<div class="col s5 mb-2">
 				<label>
 					<input name="hmmm" type="radio" value="decrypt" />
 					<span>Decrypt</span>
 				</label>
 			</div>
-			<div class="col s4 mb-2">
-				<button class="btn waves-effect waves-light" type="submit" name="action" onclick="letsencrypt()">Submit
-				</button>
+			<div class="col s2 right">
+				<button id="encbtn" class="btn waves-effect waves-light" type="submit" name="action"
+					onclick="letsencrypt()">Encrypt </button>
 			</div>
-			<div class="mt-2 input-field col s12 textarea-div">
-				<textarea id="textarea1" class="materialize-textarea"></textarea>
-				<label for="textarea1" id="textarea-label">Enter text to Encrypt</label>
+			<div class="row">
+				<div class="input-field col s12 textarea-div">
+					<textarea id="textarea1" class="materialize-textarea"></textarea>
+					<label for="textarea1" id="textarea-label">Enter text to Encrypt</label>
+				</div>
 			</div>
 		</div>
-		<div class="mb-2">
+		<div class="row">
 			<label>Algorithm</label>
 			<select id="options" class="browser-default s12">
 				<option value="0" selected>AES</option>
@@ -35,16 +37,20 @@
 				<option value="2">Triple DES</option>
 				<option value="3">Rabbit</option>
 				<option value="4">RC4</option>
-				
 			</select>
 		</div>
-		<div class="input-field col s12">
-			<input id="key" type="text">
-			<label for="key">Enter a key</label>
+		<div class="row">
+			<div class="input-field col s12">
+				<input id="key" type="text">
+				<label for="key">Enter a key</label>
+			</div>
 		</div>
-		<div class="input-field col s12">
-			<input id="answer" type="text" disabled>
-			<label for="answer">Solution</label>
+		<div class="row">
+			<div class="input-field col s9">
+				<input id="answer" type="text">
+				<label class="text" style="color:gray;padding:0%;margin:0%;">Solution</label>
+			</div>
+			<div class="col s3 btn right" onclick="copyToClipBoard()">Copy to Clipboard</div>
 		</div>
 	</div>
 </div>
@@ -58,12 +64,14 @@
 	});
 	$('input[type=radio][name=hmmm]').change(function () {
 		if (this.value == 'encrypt') {
+			$("#encbtn").html("Encrypt");
 			$(".textarea-div").html("");
 			$(".textarea-div").html(
 				'<textarea id="textarea1" class="materialize-textarea"></textarea><label for="textarea1" id="textarea-label">Enter text to Encrypt</label>'
 				);
 			encrypt = true;
 		} else if (this.value == 'decrypt') {
+			$("#encbtn").html("Decrypt");
 			$(".textarea-div").html("");
 			$(".textarea-div").html(
 				'<textarea id="textarea1" class="materialize-textarea"></textarea><label for="textarea1" id="textarea-label">Enter text to Decrypt</label>'
@@ -77,23 +85,30 @@
 		let optionss = $('#options').val();
 		let textt = encodeURIComponent($('#textarea1').val());
 		let keyy = $('#key').val();
-		const url = "?algo="+optionss+"&text="+textt+"&key="+keyy;
+		const url = "?algo=" + optionss + "&text=" + textt + "&key=" + keyy;
 		console.log(url);
-		if (encrypt){
-			$.get("/enc"+url,function(data,status){
+		if (encrypt) {
+			$.get("/enc" + url, function (data, status) {
 				var x = data.toString();
 				console.log(x);
 				$('#answer').val(x);
 				console.log(x);
 			})
 		} else {
-			$.get("/dec"+url,function(data,status){
+			$.get("/dec" + url, function (data, status) {
 				var x = data.toString();
 				console.log(x);
 				$('#answer').val(x);
 				console.log(x);
 			})
 		}
+		$('#answer').select();
+	}
+
+	function copyToClipBoard() {
+		var copyText = document.getElementById("answer");
+		copyText.select();
+		document.execCommand("copy");
 	}
 
 </script>
